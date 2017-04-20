@@ -1,0 +1,213 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>滑动条</title>
+    <link rel="stylesheet" href="index.css">
+    <style type="text/css">
+      #box {
+        position: relative;
+        width: 200px;
+        height: 50px;
+        border: 1px solid #eee;
+        margin: 50px auto 0;
+      }
+
+      #bg {
+        height: 10px;
+        margin-top: 19px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        overflow: hidden;
+      }
+
+      #bgcolor {
+        background: #5889B2;
+        width: 0;
+        height: 10px;
+        border-radius: 5px;
+      }
+
+      #bt {
+        width: 34px;
+        height: 34px;
+        /*border: 1px solid red;*/
+        background: url("img/懵B.png") no-repeat center center;
+        /*background: url(http://bbs.blueidea.com/data/attachment/album/201505/22/192934pwywwrt8cbrfwzfh.png) no-repeat center center;*/
+        border-radius: 17px;
+        overflow: hidden;
+        position: absolute;
+        left: 0px;
+        margin-left: -17px;
+        top: 8px;
+        cursor: pointer;
+        z-index: 999;
+      }
+
+      #text {
+        width: 200px;
+        margin: 0 auto;
+        font-size: 16px;
+        line-height: 2em;
+      }
+    </style>
+
+
+    <script src="jquery.js"></script>
+    <!--<script type="text/javascript" src="http://www.w3school.com.cn/jquery/jquery-1.11.1.min.js"></script>-->
+  </head>
+
+  <body>
+    <!--例子-->
+    <div id="box">
+      <div id="bg">
+        <div id="bgcolor"></div>
+      </div>
+      <div id="bt"></div>
+    </div>
+    <div id="text"></div>
+
+    <!--重构-->
+    <div id="box1">
+      <div id="bg1">
+        <div id="bgColor1"></div>
+      </div>
+      <div id="btn1"></div>
+    </div>
+    <div id="text1"></div>
+
+
+    <script type="text/javascript">
+      /* $(document).ready(function(){})简写为函数$(function(){})
+                                                                                    意义是在DOM加载完毕后执行ready()函数*/
+
+      //(function($){})(JQuery)实际上是执行了()(para)匿名方法,只不过传递的是JQuery对象
+
+      /*jQuery(function(){　});
+          用于存放操作DOM对象的代码，执行其中代码时DOM对象已存在。
+          不可用于存放开发插件的代码，因为jQuery对象没有得到传递，外部通过jQuery.method也调用不了其中的方法（函数）。 
+      (function(){　})(jQuery)；用于存放开发插件的代码，执行其中代码时DOM不一定存在，所以直接自动执行DOM操作的代码 请小心使用。*/
+      (function ($) {
+        var $box = $('#box'); //获取整个滑动条块DOM
+        var $bg = $('#bg'); //获取整个滑动条DOM
+        var $bgcolor = $('#bgcolor'); //获取滑动条块颜色部分DOM
+        var $btn = $('#bt'); //获取滑动按钮DOM
+        var $text = $('#text'); //这里是指的进度文本,需要改进
+        var statu = false; //声明一个状态变量
+
+        //鼠标点击下去时距离左边的距离  
+        var ox = 0;
+
+        //按钮距离文档左边的距离
+        var lx = 0;
+
+        //滑动条块带颜色的宽度,也是按钮距离父容器的左边距,初始为0
+        var left = 0;
+
+        var bgleft = 0;
+
+        // 给按钮绑定"鼠标按下事件"
+        $btn.mousedown(function (e) {
+          // 获取按钮当前距离窗口左边的距离
+          lx = $btn.offset().left;
+
+          //pageX()属性是鼠标指针相对于文档的左间距
+
+          //初始化鼠标点击时距离左边的距离
+          ox = e.pageX - left;
+          // console.log(ox);
+          //鼠标按下时状态为true
+          statu = true;
+        });
+
+        $(document).mouseup(function () {
+          statu = false;
+        });
+        // 在滑动条块绑定"鼠标移动事件"
+        //此处触发频率较高,可以做节流优化
+        $box.mousemove(function (e) {
+          // console.log(1);
+          //对鼠标状态进行判断,按下才代表想要拖动滑动条
+          if (statu) {
+            //鼠标当前左边距-初始化左边距=滑动的距离
+            left = e.pageX - ox;
+            // console.log(ox);
+
+            //若进度本来就为0,则是不能减小的.
+            //所以一旦当前距离小于初始距离就将进度设置为0
+            if (left < 0) {
+              left = 0;
+            }
+            //因为进度条长度默认为200,此处应该获取进度条DOM对象的width用变量代替
+            //所以鼠标滑动的最大距离超过则视为滑满
+            if (left > 200) {
+              left = 200;
+            }
+            // 设置按钮与滑动条颜色样式完成动画效果
+            $btn.css('left', left);
+            $bgcolor.width(left);
+            //求得百分比
+            $text.html('位置:' + parseInt(left / 2) + '%');
+          }
+        });
+
+        //此函数有问题
+        $bg.click(function (e) {
+          // console.log(statu);
+          //如果处于未按下状态
+          if (!statu) {
+            // 获取背景框左边距
+            bgleft = $bg.offset().left;
+            //此时进度条width等于鼠标点击X坐标-背景框左边距
+            left = e.pageX - bgleft;
+
+            if (left < 0) {
+              left = 0;
+            }
+            if (left > 200) {
+              left = 200;
+            }
+
+            $btn.css('left', left);
+            //增加一个动画
+            $bgcolor.stop().animate({
+              width: left
+            }, 5000);
+            // $bgcolor.animate({
+            //   width: left
+            // }, 5000);
+
+            // $bgcolor.width(left);
+            $text.html('位置:' + parseInt(left / 2) + '%');
+          }
+        });
+      })(jQuery);
+
+      window.onload = function () {
+        // 对象声明区
+        var _box1 = document.getElementById("box1");
+        var _bg1 = document.getElementById("bg1");
+        var _bgColor1 = document.getElementById("bgColor1");
+        var _btn1 = document.getElementById("btn1");
+        var _text1 = document.getElementById("text1");
+
+
+        // 变量声明区
+        var statu = false; //"按钮"状态变量,true=按下,false=未按下
+        var btn1_left = 0; //"按钮"距离父容器的左边距,也是"颜色进度条"width
+        var bg1_width = 0; //"进度条"距离文档的左边距
+        var box1_left = 0; //"滑动块"距离文档的左边距
+
+        //IE5+以下未考虑
+        // addEvent(_bg1, "click", function () {
+
+        // }, false);
+
+      }
+    </script>
+
+    <script src="index.js"></script>
+  </body>
+
+</html>
