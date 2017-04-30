@@ -4,7 +4,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>滑动条</title>
-  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="css/index.css">
   <style type="text/css">
     #box {
       position: relative;
@@ -53,13 +53,13 @@
     }
   </style>
 
-
-  <script src="jquery.js"></script>
+  <script src="js/jquery.js"></script>
+  <script src="js/common.js"></script>
   <!--<script type="text/javascript" src="http://www.w3school.com.cn/jquery/jquery-1.11.1.min.js"></script>-->
 </head>
 
 <body>
-  <!--例子-->
+  <!--JQ版本-->
   <div id="box">
     <div id="bg">
       <div id="bgcolor"></div>
@@ -68,7 +68,7 @@
   </div>
   <div id="text"></div>
 
-  <!--重构-->
+  <!--js版-->
   <div id="box1">
     <div id="bg1">
       <div id="bgColor1"></div>
@@ -80,7 +80,7 @@
 
   <script type="text/javascript">
     /* $(document).ready(function(){})简写为函数$(function(){})
-                                                                                        意义是在DOM加载完毕后执行ready()函数*/
+                                                                                                    意义是在DOM加载完毕后执行ready()函数*/
 
     //(function($){})(JQuery)实际上是执行了()(para)匿名方法,只不过传递的是JQuery对象
 
@@ -111,9 +111,7 @@
       $btn.mousedown(function (e) {
         // 获取按钮当前距离窗口左边的距离
         lx = $btn.offset().left;
-
         //pageX()属性是鼠标指针相对于文档的左间距
-
         //初始化鼠标点击时距离左边的距离
         ox = e.pageX - left;
         // console.log(ox);
@@ -152,7 +150,7 @@
         }
       });
 
-      //此函数有问题
+
       $bg.click(function (e) {
         // console.log(statu);
         //如果处于未按下状态
@@ -183,33 +181,8 @@
         }
       });
     })(jQuery);
-
-
-
-    window.onload = function () {
-      // 对象声明区
-      var _box1 = document.getElementById("box1");
-      var _bg1 = document.getElementById("bg1");
-      var _bgColor1 = document.getElementById("bgColor1");
-      var _btn1 = document.getElementById("btn1");
-      var _text1 = document.getElementById("text1");
-
-
-      // 变量声明区
-      var statu = false; //"按钮"状态变量,true=按下,false=未按下
-      var btn1_left = 0; //"按钮"距离父容器的左边距,也是"颜色进度条"width
-      var bg1_width = 0; //"进度条"距离文档的左边距
-      var box1_left = 0; //"滑动块"距离文档的左边距
-
-      //IE5+以下未考虑
-      // addEvent(_bg1, "click", function () {
-
-      // }, false);
-
-    }
   </script>
-
-  <script src="index.js"></script>
+  <script src="js/index.js"></script>
 </body>
 
 </html>

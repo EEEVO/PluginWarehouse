@@ -14,17 +14,17 @@
   margin: 16px auto 0px;
 }
 
-#bgColor {
+#bgColor1 {
   height: 16px;
   border-radius: 8px;
-  /*width: 100px;
-  background-color: #30396C;*/
+  width: 0;
+  background-color: #30396C;
 }
 
 #btn1 {
   height: 32px;
   width: 32px;
-  background: url("img/中毒-1.png");
+  background: url("../img/中毒-1.png");
   border-radius: 16px;
   position: absolute;
   left: 0px;
