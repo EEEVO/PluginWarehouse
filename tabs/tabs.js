@@ -2,7 +2,7 @@ let dom = {
   /**
    * es6版
    * 添加事件
-   * 
+   *
    * @param {any} element 目标对象
    * @param {any} eventType 事件类型
    * @param {any} selector 选择器
@@ -21,22 +21,28 @@ let dom = {
         }
         el = el.parentNode
       }
-      console.log(fn);
       el && fn.call(el, e, el)
     })
     return element
   },
+  //设置选中状态
   uniqueClass: function (element, className) {
-    // console.log(el);
+    // 遍历element.parentNode.children，移除className
     dom.every(element.parentNode.children, (el) => {
-      el.classList.remove(className)
+      el
+        .classList
+        .remove(className)
     })
-    element.classList.add(className)
+    // 为选中项添加className
+    element
+      .classList
+      .add(className)
+
     return element
   },
+  // 遍历dom，对其每一项item运行fn
   every: function (nodeList, fn) {
     for (var i = 0; i < nodeList.length; i++) {
-      // TODO:call null有啥用
       fn.call(null, nodeList[i], i)
     }
     return nodeList
@@ -51,7 +57,7 @@ let dom = {
       }
     }
     return -1
-  },
+  }
 }
 
 // 定义一个插件类
@@ -63,9 +69,15 @@ class Tabs {
       navSelector: '[data-role="tabs-nav"]',
       panesSelector: '[data-role="tabs-panes"]',
       activeClassName: 'active',
+      index: 0
     }
     this.options = Object.assign({}, defaultOptions, options)
-    this.checkOptions().bindEvents().setDefaultTab()
+    this
+      .checkOptions()
+      .bindEvents()
+      .setDefaultTab(options.index == null
+        ? defaultOptions.index
+        : options.index)
   }
   // 设置一个检查属性
   checkOptions() {
@@ -79,16 +91,27 @@ class Tabs {
     dom.on(this.options.element, 'click', `${this.options.navSelector}>li`, (e, el) => {
       // 获取当前被点击块在导航栏中的索引
       let index = dom.getIndex(el)
-      // 获取导航栏中的导航块集合
-      let children = this.options.element.querySelector(this.options.panesSelector).children
-
+      // 获取导航栏中的导航内容块集合
+      let children = this
+        .options
+        .element
+        .querySelector(this.options.panesSelector)
+        .children
+      //TODO:此处设计导航栏应一一与导航块对应，导航块的状态应该与导航栏直接绑定设置，无须分别两次设置 设置导航栏的状态事件
       dom.uniqueClass(el, this.options.activeClassName)
+      // 设置导航块的状态事件
       dom.uniqueClass(children[index], this.options.activeClassName)
     })
     return this
   }
-  setDefaultTab() {
-    this.options.element.querySelector(`${this.options.navSelector}>li:first-child`).click()
+  
+  // TODO:可以完善为自由添加索引，默认是哪项初始化被选中 设置默认的选项
+  setDefaultTab(index) {
+    this
+      .options
+      .element
+      .querySelectorAll(`${this.options.navSelector}>li`)[index]
+      .click()
     return this
   }
 }
