@@ -88,19 +88,19 @@
     new Pager({
       element: pagers[0],
       currentPage: 6,
-      totalPage: 9,
-      buttonCount: 10
-    })
+      totalPage: 5,
+      buttonCount: 6
+    });
     pagers[0].addEventListener('pageChange', (e) => {
       console.log(e.detail.page)
-    })
+    });
 
     new Pager({
       element: pagers[1],
       currentPage: parseInt(bom.queryString.get('page'), 10),
       totalPage: 100,
       pageQuery: 'page'
-    })
+    });
   </script>
 
 </html>

@@ -23,7 +23,7 @@ let dom = {
     return element
   },
 
-  onSwipe: function (element, fn) {
+  onSwipe(element, fn) {
     let x0, y0
     element.addEventListener('touchstart', function (e) {
       x0 = e.touches[0].clientX

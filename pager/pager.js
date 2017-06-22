@@ -82,9 +82,9 @@ class Pager {
   // 绑定事件
   bindEvents() {
     dom.on(this.options.element, 'click', 'ol[data-role="pageNumbers"]>li', (e, el) => {
-      console.log(el); /*li标签*/
       this.goToPage(parseInt(el.dataset.page, 10));
     });
+    // 添加4个特殊按钮的事件
     this.domRefs.first.addEventListener('click', () => {
       this.goToPage(1);
     });
@@ -99,26 +99,40 @@ class Pager {
     });
   }
   goToPage(page) {
+    // 如果当前页数不存在或者大于总页数或者等于当前页数，直接返回
     if (!page || page > this.options.totalPage || page === this.currentPage) {
       return
     }
+
+    //此处是用于url跳转
     if (this.options.pageQuery) {
       bom.queryString.set(this.options.pageQuery, page)
     }
-    this.currentPage = page
-    this.options.element.dispatchEvent(new CustomEvent('pageChange', {
+    this.currentPage = page;
+
+    let obj_CustomEvent = new CustomEvent('pageChange', {
       detail: {
         page
       }
-    }))
-    this.rerender()
+    })
+    // TODO:此处存在疑惑
+    //this.options.element是整个分页栏div块
+    this.options.element.dispatchEvent(obj_CustomEvent);
+
+    this.rerender();
   }
+  // 按钮状态刷新
   rerender() {
-    this._checkButtons()
-    let newNumbers = this._createNumbers()
-    let oldNumbers = this.domRefs.numbers
-    oldNumbers.parentNode.replaceChild(newNumbers, oldNumbers)
-    this.domRefs.numbers = newNumbers
+    // 计算首尾按钮状态
+    this._checkButtons();
+    // 计算新的分页button
+    let newNumbers = this._createNumbers();
+    // 获取老的分页按钮状态
+    let oldNumbers = this.domRefs.numbers;
+    // 替换整体节点
+    oldNumbers.parentNode.replaceChild(newNumbers, oldNumbers);
+    // 新节点ol存入this.domRefs.numbers
+    this.domRefs.numbers = newNumbers;
   }
 
   // 动态计算分页栏中的按钮
@@ -131,44 +145,14 @@ class Pager {
       totalPage
     } = this.options;
 
-    // let start1 = Math.max(currentPage - Math.round(buttonCount / 2), 1);
-    let start1;
-    // 如果当前按钮页数小于分页栏按钮长度的一半，则说明第一个按钮为1
-    // 反之如果当前按钮页数，大于分页按钮长度的一半，则第一个按钮？？
-    if (currentPage - Math.round(buttonCount / 2) < 1) {
-      start1 = 1;
-    } else {
-      // 当前页数向前推按钮长度的一半就是第一个按钮的页数
-      start1 = currentPage - Math.round(buttonCount / 2);
-    }
-
-    // let end2 = Math.min(currentPage + Math.round(buttonCount / 2) - 1, totalPage);
-    let end2;
-    // 如果当前按钮页数加上分页按钮的一半大于总页数
-    // 同理，后面那个按钮的页数就是向后推按钮长度的一半-1
-    if (currentPage + Math.round(buttonCount / 2) - 1 > totalPage) {
-      end2 = totalPage;
-    } else {
-      end2 = currentPage + Math.round(buttonCount / 2) - 1
-    }
-
-    let start2 = Math.max(end2 - buttonCount + 1, 1);
-    let end1 = Math.min(start1 + buttonCount - 1, totalPage);
-
-    // TODO:重写逻辑
+    // TODO:中间有无bug需测试
     let start;
     let end;
     // 总页数小于按钮长度
-    if (totalPage < buttonCount) {
+    if (totalPage <= buttonCount) {
       start = 1;
       end = totalPage;
-
     }
-    // // 总页数等于于按钮长度
-    // if (totalPage = buttonCount) {
-    //   start = end = totalPage;
-
-    // }
 
     // 总页数大于按钮长度
     if (totalPage > buttonCount) {
@@ -186,24 +170,17 @@ class Pager {
       }
     }
 
-
-
-    // TODO:源码可用
-    // let start = Math.min(start1, start2);
-    // let end = Math.max(end1, end2);
-
     let ol = dom.create('<ol data-role="pageNumbers"></ol>');
     let numbers = [];
 
     // 循环添加button至分页栏中
     for (var i = start; i <= end; i++) {
-      let li = dom.create(`<li data-page="${i}">${this.options.templates.number.replace('%page%', i)}</li>`)
+      let li = dom.create(`<li data-page="${i}">${this.options.templates.number.replace('%page%', i)}</li>`);
       if (i === currentPage) {
         li.classList.add('current')
       }
       ol.appendChild(li)
     }
-
     return ol
   }
 }
